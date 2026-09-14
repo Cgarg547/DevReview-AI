@@ -1,23 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { SignedIn } from "@clerk/nextjs";
-import React from "react";
-import { toast } from "sonner";
 
 const ClerkBillingButton = () => {
-  const handleChoosePro = () => {
-    toast.info("Pro billing is coming soon.");
-  };
-
   return (
     <SignedIn>
-      <button
-        type="button"
-        onClick={handleChoosePro}
-        className="w-full mt-auto bg-sky-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-sky-500 transition-colors cursor-pointer"
+      <Link
+        href="/pricing"
+        className="block w-full rounded-lg bg-sky-600 px-6 py-3 text-center font-semibold text-white transition-colors hover:bg-sky-500"
       >
         Choose Pro
-      </button>
+      </Link>
     </SignedIn>
   );
 };

@@ -6,3 +6,7 @@ node_modules/
 convex/_generated/
 .DS_Store
 *.tsbuildinfo
+
+# Local backup files
+*.backup.tsx
+components-backup/

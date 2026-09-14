@@ -57,32 +57,40 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#1e1e1e]">
-      {/* Editor Header */}
-      <div className="flex min-h-[58px] flex-shrink-0 items-center justify-between gap-3 border-b border-gray-800 bg-gray-900 px-3 sm:px-4">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-[#111318]">
+      {/* Editor Toolbar */}
+      <div className="flex min-h-[58px] shrink-0 items-center justify-between gap-3 border-b border-gray-800/80 bg-[#151922] px-3 sm:px-4">
+        <div className="flex min-w-0 items-center gap-2.5">
           {/* Traffic lights */}
           <div className="hidden items-center gap-1.5 sm:flex">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-red-500/80 shadow-sm" />
+            <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80 shadow-sm" />
+            <span className="h-2.5 w-2.5 rounded-full bg-green-500/80 shadow-sm" />
           </div>
 
-          <div className="hidden h-4 w-px bg-gray-700 sm:block" />
+          <div className="hidden h-5 w-px bg-gray-800 sm:block" />
 
-          <div className="min-w-0">
-            <h2
-              className="max-w-[180px] truncate text-xs font-medium text-gray-300 sm:max-w-[300px] sm:text-sm"
-              title={file?.path}
-            >
-              {file ? file.path : "Code Viewer"}
-            </h2>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="hidden text-xs text-gray-600 sm:inline">
+              src
+            </span>
 
-            {file && (
-              <p className="mt-0.5 text-[10px] text-gray-600 sm:hidden">
-                Source code
-              </p>
-            )}
+            <span className="text-gray-700 sm:inline">/</span>
+
+            <div className="min-w-0">
+              <h2
+                className="max-w-[170px] truncate text-xs font-medium text-gray-300 sm:max-w-[340px] sm:text-sm"
+                title={file?.path}
+              >
+                {file ? file.path : "Code Viewer"}
+              </h2>
+
+              {file && (
+                <p className="mt-0.5 text-[9px] text-gray-600">
+                  Source code
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -91,20 +99,34 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
             type="button"
             onClick={onReview}
             disabled={isReviewing || !canReview}
-            className="flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg bg-sky-600 px-2.5 py-2 text-[11px] font-semibold text-white shadow-sm transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-500 sm:gap-2 sm:px-3.5 sm:text-xs"
+            className={`group flex shrink-0 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold transition-all sm:gap-2 sm:px-4 sm:text-xs ${
+              canReview
+                ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20 hover:-translate-y-0.5 hover:bg-sky-400 hover:shadow-sky-500/30 active:translate-y-0"
+                : "cursor-not-allowed bg-gray-800 text-gray-500"
+            } disabled:cursor-not-allowed disabled:opacity-70`}
           >
             {isReviewing ? (
               <>
                 <Spinner />
-                <span className="hidden sm:inline">Analyzing...</span>
-                <span className="sm:hidden">Analyzing</span>
+                <span className="hidden sm:inline">
+                  Analyzing...
+                </span>
+                <span className="sm:hidden">
+                  Analyzing
+                </span>
               </>
             ) : (
               <>
-                <span>✨</span>
-                <span className="hidden sm:inline">
-                  {canReview ? "Review Code" : "Upgrade to Review"}
+                <span className="transition-transform group-hover:scale-110">
+                  ✨
                 </span>
+
+                <span className="hidden sm:inline">
+                  {canReview
+                    ? "Review Code"
+                    : "Upgrade to Review"}
+                </span>
+
                 <span className="sm:hidden">
                   {canReview ? "Review" : "Upgrade"}
                 </span>
@@ -115,14 +137,22 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
       </div>
 
       {/* Code Area */}
-      <div className="min-h-0 flex-1 overflow-auto">
+      <div className="min-h-0 flex-1 overflow-auto [scrollbar-color:#374151_transparent] [scrollbar-width:thin]">
         {isLoading && (
-          <div className="flex min-h-[400px] h-full flex-col items-center justify-center gap-3 px-4">
-            <Spinner />
+          <div className="flex h-full min-h-[400px] flex-col items-center justify-center gap-4 px-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10 shadow-lg shadow-sky-500/5">
+              <Spinner />
+            </div>
 
-            <span className="text-center text-sm text-gray-500">
-              Fetching file...
-            </span>
+            <div className="text-center">
+              <p className="text-sm font-semibold text-gray-300">
+                Loading source code
+              </p>
+
+              <p className="mt-1 text-xs text-gray-600">
+                Fetching the file from GitHub...
+              </p>
+            </div>
           </div>
         )}
 
@@ -134,22 +164,26 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
             wrapLongLines={false}
             customStyle={{
               margin: 0,
-              padding: "1rem 0",
+              padding: "1rem 0 2rem",
               background: "transparent",
               minHeight: "100%",
               fontSize: "12px",
-              lineHeight: "1.65",
+              lineHeight: "1.7",
+              fontFamily:
+                "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
             }}
             lineNumberStyle={{
               minWidth: "3.5em",
-              paddingRight: "1em",
-              paddingLeft: "0.5em",
+              paddingRight: "1.2em",
+              paddingLeft: "0.8em",
               textAlign: "right",
               userSelect: "none",
               color: "#4b5563",
+              fontSize: "11px",
             }}
             lineProps={(lineNumber) => {
-              const isHighlighted = highlightedLine === lineNumber;
+              const isHighlighted =
+                highlightedLine === lineNumber;
 
               return {
                 "data-highlight-line": lineNumber,
@@ -157,13 +191,15 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
                   display: "block",
                   width: "100%",
                   backgroundColor: isHighlighted
-                    ? "rgba(245, 158, 11, 0.15)"
+                    ? "rgba(14, 165, 233, 0.14)"
                     : undefined,
                   borderLeft: isHighlighted
-                    ? "3px solid rgb(245, 158, 11)"
+                    ? "3px solid rgb(14, 165, 233)"
                     : "3px solid transparent",
                   boxSizing: "border-box",
-                  transition: "background-color 0.2s ease",
+                  transition:
+                    "background-color 0.2s ease",
+                  minHeight: "1.7em",
                 },
               };
             }}
@@ -172,18 +208,38 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({
           </SyntaxHighlighter>
         ) : (
           !isLoading && (
-            <div className="flex min-h-[400px] h-full items-center justify-center px-6">
+            <div className="flex h-full min-h-[400px] items-center justify-center px-6">
               <div className="max-w-sm text-center">
-                <div className="mb-3 text-3xl">📄</div>
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900 text-2xl shadow-xl">
+                  ‹›
+                </div>
 
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Select a file from the repository to view its content.
+                <p className="text-sm font-semibold text-gray-300">
+                  No file selected
+                </p>
+
+                <p className="mt-2 text-xs leading-relaxed text-gray-600">
+                  Select a file from the Explorer to inspect
+                  its source code.
                 </p>
               </div>
             </div>
           )
         )}
       </div>
+
+      {/* Editor Footer */}
+      {file?.content && !isLoading && (
+        <div className="flex shrink-0 items-center justify-between border-t border-gray-800/80 bg-[#151922] px-3 py-2 sm:px-4">
+          <span className="text-[9px] font-medium uppercase tracking-wider text-gray-600">
+            Read only
+          </span>
+
+          <span className="text-[9px] text-gray-600">
+            GitHub source
+          </span>
+        </div>
+      )}
     </div>
   );
 };

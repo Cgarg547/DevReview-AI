@@ -23,28 +23,41 @@ interface TreeNodeProps {
   selectedFile?: string | null;
 }
 
-const getFileIcon = (fileName: string): React.ReactNode => {
-  const extension = fileName.split(".").pop()?.toLowerCase();
-  const iconClass = "size-5 mr-2 flex-shrink-0";
+const getFileIcon = (
+  fileName: string
+): React.ReactNode => {
+  const extension = fileName
+    .split(".")
+    .pop()
+    ?.toLowerCase();
+
+  const iconClass =
+    "size-4.5 mr-2 flex-shrink-0";
 
   switch (extension) {
     case "js":
     case "jsx":
       return <JsIcon className={iconClass} />;
+
     case "ts":
     case "tsx":
       return <TsIcon className={iconClass} />;
+
     case "json":
       return <JsonIcon className={iconClass} />;
+
     case "css":
     case "scss":
     case "sass":
       return <CssIcon className={iconClass} />;
+
     case "html":
       return <HtmlIcon className={iconClass} />;
+
     case "md":
     case "mdx":
       return <MarkdownIcon className={iconClass} />;
+
     case "png":
     case "jpg":
     case "jpeg":
@@ -52,9 +65,18 @@ const getFileIcon = (fileName: string): React.ReactNode => {
     case "svg":
     case "webp":
     case "ico":
-      return <ImageIcon className={`${iconClass} text-gray-400`} />;
+      return (
+        <ImageIcon
+          className={`${iconClass} text-gray-400`}
+        />
+      );
+
     default:
-      return <FileIcon className={`${iconClass} text-gray-400`} />;
+      return (
+        <FileIcon
+          className={`${iconClass} text-gray-400`}
+        />
+      );
   }
 };
 
@@ -64,56 +86,87 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   selectedFile,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
   const isFolder = node.type === "folder";
-  const isSelected = !isFolder && node.path === selectedFile;
+  const isSelected =
+    !isFolder && node.path === selectedFile;
 
   const handleToggle = () => {
     if (isFolder) {
-      setIsOpen(!isOpen);
+      setIsOpen((current) => !current);
     } else {
       onFileSelect(node.path);
     }
   };
 
+  const children = node.children
+    ? Object.values(node.children).sort(
+        (a: FileNode, b: FileNode) =>
+          b.type.localeCompare(a.type) ||
+          a.name.localeCompare(b.name)
+      )
+    : [];
+
   return (
-    <div className="my-1">
-      <div
+    <div>
+      <button
+        type="button"
         onClick={handleToggle}
-        className={`flex items-center cursor-pointer p-1 rounded-md transition-colors ${
-          isSelected ? "bg-sky-700 text-white" : "hover:bg-gray-700"
+        className={`group flex w-full min-w-0 items-center rounded-lg px-2 py-1.5 text-left transition-all ${
+          isSelected
+            ? "bg-sky-500/15 text-sky-200 shadow-sm ring-1 ring-inset ring-sky-500/20"
+            : "text-gray-400 hover:bg-gray-800/80 hover:text-gray-200"
         }`}
       >
         {isFolder ? (
+          <span
+            className={`mr-1 flex h-4 w-4 shrink-0 items-center justify-center text-[9px] text-gray-600 transition-transform ${
+              isOpen ? "rotate-90" : ""
+            }`}
+          >
+            ▶
+          </span>
+        ) : (
+          <span className="mr-1 w-4 shrink-0" />
+        )}
+
+        {isFolder ? (
           <FolderIcon
             isOpen={isOpen}
-            className="size-5 mr-2 text-sky-400 flex-shrink-0"
+            className="mr-2 size-4.5 shrink-0 text-sky-400"
           />
         ) : (
           getFileIcon(node.name)
         )}
+
         <span
-          className={`text-sm truncate ${isSelected ? "font-semibold" : ""}`}
+          className={`min-w-0 flex-1 truncate text-xs ${
+            isSelected
+              ? "font-semibold text-sky-200"
+              : "font-medium"
+          }`}
+          title={node.path}
         >
           {node.name}
         </span>
-      </div>
-      {isFolder && isOpen && (
-        <div className="pl-5 border-l border-gray-700">
-          {node.children &&
-            Object.values(node.children)
-              // Sort folders before files, then alphabetically by name.
-              .sort(
-                (a: FileNode, b: FileNode) =>
-                  b.type.localeCompare(a.type) || a.name.localeCompare(b.name)
-              )
-              .map((childNode: FileNode) => (
-                <TreeNode
-                  key={childNode.path}
-                  node={childNode}
-                  onFileSelect={onFileSelect}
-                  selectedFile={selectedFile}
-                />
-              ))}
+
+        {isFolder && (
+          <span className="ml-2 shrink-0 text-[9px] text-gray-700">
+            {children.length}
+          </span>
+        )}
+      </button>
+
+      {isFolder && isOpen && children.length > 0 && (
+        <div className="ml-3 border-l border-gray-800 pl-2">
+          {children.map((childNode: FileNode) => (
+            <TreeNode
+              key={childNode.path}
+              node={childNode}
+              onFileSelect={onFileSelect}
+              selectedFile={selectedFile}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -125,23 +178,24 @@ export const FileTree: React.FC<FileTreeProps> = ({
   onFileSelect,
   selectedFile,
 }) => {
+  const nodes = tree.children
+    ? Object.values(tree.children).sort(
+        (a: FileNode, b: FileNode) =>
+          b.type.localeCompare(a.type) ||
+          a.name.localeCompare(b.name)
+      )
+    : [];
+
   return (
-    <div>
-      {tree.children &&
-        Object.values(tree.children)
-          // Sort folders before files, then alphabetically by name.
-          .sort(
-            (a: FileNode, b: FileNode) =>
-              b.type.localeCompare(a.type) || a.name.localeCompare(b.name)
-          )
-          .map((node: FileNode) => (
-            <TreeNode
-              key={node.path}
-              node={node}
-              onFileSelect={onFileSelect}
-              selectedFile={selectedFile}
-            />
-          ))}
+    <div className="space-y-0.5">
+      {nodes.map((node: FileNode) => (
+        <TreeNode
+          key={node.path}
+          node={node}
+          onFileSelect={onFileSelect}
+          selectedFile={selectedFile}
+        />
+      ))}
     </div>
   );
 };

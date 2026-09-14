@@ -9,38 +9,44 @@ import { Spinner } from "@/components/global/Spinner";
 const Hero = async () => {
   const user = await auth();
 
+  const isAuthenticated = user.isAuthenticated;
+
   return (
-    <section className="relative min-h-screen flex items-center bg-grid-gray-800/[0.2]">
+    <section className="relative min-h-screen overflow-hidden bg-grid-gray-800/[0.2] pt-28 pb-16 sm:pt-32 md:flex md:items-center md:py-20">
       <div className="hero-shadow" />
 
-      <div className="container mx-auto px-4 z-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      <div className="container relative z-10 mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-12 md:grid-cols-2 md:gap-10 lg:gap-16">
           <div className="text-center md:text-left">
-            <h1 className="hero-h1">
+            <h1 className="hero-h1 mx-auto max-w-3xl md:mx-0">
               Supercharge Your Code Reviews with AI.
             </h1>
 
-            <p className="hero-p">
+            <p className="hero-p mx-auto mt-6 max-w-2xl md:mx-0">
               DevReview AI analyzes your GitHub repositories to find bugs,
               improve performance, and enforce best practices. Go from pull
               request to production with confidence.
             </p>
 
-            <ClerkLoading>
-              <Spinner />
-            </ClerkLoading>
+            <div className="mt-8 flex justify-center md:justify-start">
+              <ClerkLoading>
+                <Spinner />
+              </ClerkLoading>
 
-            <ClerkLoaded>
-              <Link
-                href={user.isAuthenticated ? "/dashboard" : "/sign-in"}
-                className="hero-link"
-              >
-                Get Started for Free
-              </Link>
-            </ClerkLoaded>
+              <ClerkLoaded>
+                <Link
+                  href={isAuthenticated ? "/dashboard" : "/sign-in"}
+                  className="hero-link"
+                >
+                  {isAuthenticated
+                    ? "Open Dashboard"
+                    : "Get Started for Free"}
+                </Link>
+              </ClerkLoaded>
+            </div>
           </div>
 
-          <div>
+          <div className="mx-auto w-full max-w-2xl md:max-w-none">
             <HeroAnimation />
           </div>
         </div>

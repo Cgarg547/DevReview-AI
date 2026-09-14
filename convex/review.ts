@@ -14,14 +14,33 @@ export const saveReview = mutation({
       v.literal("Completed"),
       v.literal("failed")
     ),
+    serviceKey: v.optional(v.string()),
   },
 
   handler: async (ctx, args) => {
-    if (!args.repoFullName || !args.fileSha) {
+    if (!args.repoFullName || !args.fileSha || !args.clerkId) {
       throw new ConvexError({
-        message: "Repo full name and file SHA are required",
+        message: "Repository, file SHA, and user are required",
         code: "INVALID_ARGUMENT",
       });
+    }
+
+    const configuredServiceKey = process.env.INNGEST_REVIEW_SECRET;
+
+    const isServerReviewRequest =
+      !!configuredServiceKey &&
+      !!args.serviceKey &&
+      args.serviceKey === configuredServiceKey;
+
+    if (!isServerReviewRequest) {
+      const identity = await ctx.auth.getUserIdentity();
+
+      if (!identity || identity.subject !== args.clerkId) {
+        throw new ConvexError({
+          message: "You are not authorized to modify this review",
+          code: "UNAUTHENTICATED",
+        });
+      }
     }
 
     const existingReview = await ctx.db
@@ -41,7 +60,7 @@ export const saveReview = mutation({
             args.reviewContent,
             ...existingReview.reviewContent,
           ],
-          status: args.status,
+          status: "Completed",
         });
       } else {
         await ctx.db.patch(existingReview._id, {
@@ -52,7 +71,7 @@ export const saveReview = mutation({
       return existingReview._id;
     }
 
-    const reviewId = await ctx.db.insert("reviews", {
+    return await ctx.db.insert("reviews", {
       repoFullName: args.repoFullName,
       filePath: args.filePath,
       fileSha: args.fileSha,
@@ -63,8 +82,6 @@ export const saveReview = mutation({
       status: args.status,
       owner: args.owner,
     });
-
-    return reviewId;
   },
 });
 
@@ -82,22 +99,24 @@ export const getReviewForFile = query({
       });
     }
 
-    const review = await ctx.db
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      return null;
+    }
+
+    return await ctx.db
       .query("reviews")
       .withIndex("by_file_sha", (q) =>
         q
           .eq("repoFullName", args.repoFullName)
           .eq("fileSha", args.fileSha)
+          .eq("clerkId", identity.subject)
       )
       .first();
-
-    return review;
   },
 });
 
-/**
- * Get all review history for a repository.
- */
 export const getReviewHistory = query({
   args: {
     repoFullName: v.string(),
@@ -105,14 +124,23 @@ export const getReviewHistory = query({
   },
 
   handler: async (ctx, args) => {
-    if (!args.repoFullName || !args.clerkId) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity || identity.subject !== args.clerkId) {
       throw new ConvexError({
-        message: "Repo full name and Clerk ID are required",
+        message: "You are not authorized to view this review history",
+        code: "UNAUTHENTICATED",
+      });
+    }
+
+    if (!args.repoFullName) {
+      throw new ConvexError({
+        message: "Repo full name is required",
         code: "INVALID_ARGUMENT",
       });
     }
 
-    const reviews = await ctx.db
+    return await ctx.db
       .query("reviews")
       .withIndex("by_repo", (q) =>
         q
@@ -120,7 +148,5 @@ export const getReviewHistory = query({
           .eq("clerkId", args.clerkId)
       )
       .collect();
-
-    return reviews;
   },
 });

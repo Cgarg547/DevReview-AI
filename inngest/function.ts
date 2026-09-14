@@ -41,6 +41,7 @@ export const reviewCode = inngest.createFunction(
         owner,
         status: "Reviewing your code...",
         clerkId,
+        serviceKey: process.env.INNGEST_REVIEW_SECRET,
       });
 
       return { reviewId };
@@ -187,6 +188,7 @@ ${content}
         owner,
         clerkId,
         status: "Completed",
+        serviceKey: process.env.INNGEST_REVIEW_SECRET,
       });
 
       if (!hasProPlan) {
