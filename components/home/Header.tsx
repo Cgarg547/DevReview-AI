@@ -12,7 +12,7 @@ const Header = () => {
             <Code2 className="size-6 text-sky-400" />
           </div>
 
-          <h1 className="text-2xl font-bold text-white">CodeSight</h1>
+          <h1 className="text-2xl font-bold text-white">DevReview</h1>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-8">

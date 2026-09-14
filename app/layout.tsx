@@ -7,8 +7,8 @@ import "./globals.css";
 import ConvexClientProvider from "@/components/provider/ConvexClientProvider";
 
 export const metadata: Metadata = {
-  title: "Code Sight AI",
-  description: "Code Sight AI - AI-Powered Code Review Assistant",
+  title: "DevReview - AI",
+  description: "DevReview AI - AI-Powered Code Review Assistant",
 };
 
 export default function RootLayout({

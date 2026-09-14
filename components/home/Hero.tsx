@@ -21,7 +21,7 @@ const Hero = async () => {
             </h1>
 
             <p className="hero-p">
-              CodeSight AI analyzes your GitHub repositories to find bugs,
+              DevReview AI analyzes your GitHub repositories to find bugs,
               improve performance, and enforce best practices. Go from pull
               request to production with confidence.
             </p>
