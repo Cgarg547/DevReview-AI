@@ -11,27 +11,6 @@ Developers can authenticate, connect their GitHub repositories, browse repositor
 ## 🚀 Live Demo
 
 > Coming soon
-
----
-
-## 📸 Screenshots
-
-Add screenshots of the application here.
-
-### Dashboard
-
-![Dashboard](./screenshots/dashboard.png)
-
-### AI Code Review
-
-![Code Review](./screenshots/code-review.png)
-
-### Repository Explorer
-
-![Repository Explorer](./screenshots/repository-explorer.png)
-
-> **Tip:** Add screenshots to a `screenshots/` directory before publishing this section.
-
 ---
 
 # ✨ Features
