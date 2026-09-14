@@ -11,7 +11,6 @@ Developers can authenticate, connect their GitHub repositories, browse repositor
 ## 🚀 Live Demo
 https://dev-review-ai-ruddy.vercel.app/dashboard
 
-> Coming soon
 ---
 
 # ✨ Features
